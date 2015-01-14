@@ -19,7 +19,7 @@ apply plugin: 'forge'
 
 version = "1.8-1.0"
 group = "com.utoxin.failureuhc" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "modid"
+archivesBaseName = "FailureUHC"
 
 minecraft {
     version = "1.8-11.14.0.1285-1.8"

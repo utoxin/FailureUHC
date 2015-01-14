@@ -1,0 +1,21 @@
+[
+{
+  "modid": "FailureUHC",
+  "name": "Failure UHC",
+  "description": "The UHC mod from Failure, Inc.",
+  "version": "1.0",
+  "mcversion": "1.8",
+  "url": "",
+  "updateUrl": "",
+  "authorList": [
+    "utoxin"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]
