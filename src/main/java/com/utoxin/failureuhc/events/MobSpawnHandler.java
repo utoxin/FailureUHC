@@ -1,5 +1,6 @@
 package com.utoxin.failureuhc.events;
 
+import com.utoxin.failureuhc.utility.ConfigurationHandler;
 import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -13,7 +14,7 @@ public class MobSpawnHandler {
 	public void onLivingSpawn(LivingSpawnEvent event) {
 		if (!(event instanceof LivingSpawnEvent.AllowDespawn)) {
 			if (event.entity instanceof EntityRabbit) {
-				if (randomizer.nextInt(100) < 15 && ((EntityRabbit) event.entity).getRabbitType() != 99) {
+				if (randomizer.nextInt(100) < ConfigurationHandler.hostileRabbitPercentage && ((EntityRabbit) event.entity).getRabbitType() != 99) {
 					((EntityRabbit) event.entity).setRabbitType(99);
 				}
 			}

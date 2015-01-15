@@ -1,0 +1,12 @@
+# Message Parts
+message.components.enabled=ENABLED
+message.components.disabled=DISABLED
+message.components.playeronly=PLAYER ONLY
+
+# Messages
+message.death.spectator=You are now a spectator. Enjoy the rest of the game!
+message.settings.chat=During the game chat is: %s
+message.settings.spectators=Dead spectating is: %s
+message.settings.regeneration=Natural regeneration is: %s
+message.settings.radius=Arena Wall radius is: %d
+message.settings.rabbits=Deadly rabbit percentage is: %d%%
