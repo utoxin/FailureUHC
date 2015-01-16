@@ -31,16 +31,16 @@ public class ChatHandler {
 		ChatComponentTranslation playeronly = (ChatComponentTranslation) new ChatComponentTranslation("message.components.playeronly").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.YELLOW));
 
 		if (ConfigurationHandler.playerChat == false) {
-			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", disabled.getFormattedText()));
+			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", disabled));
 		} else if (ConfigurationHandler.spectatorChat == false) {
-			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", playeronly.getFormattedText()));
+			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", playeronly));
 		} else {
-			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", enabled.getFormattedText()));
+			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", enabled));
 		}
 
-		event.player.addChatMessage(new ChatComponentTranslation("message.settings.spectators", ConfigurationHandler.deadSpectate ? enabled.getFormattedText() : disabled.getFormattedText()));
+		event.player.addChatMessage(new ChatComponentTranslation("message.settings.spectators", ConfigurationHandler.deadSpectate ? enabled : disabled));
 
-		event.player.addChatMessage(new ChatComponentTranslation("message.settings.regeneration", ConfigurationHandler.naturalRegeneration ? enabled.getFormattedText() : disabled.getFormattedText()));
+		event.player.addChatMessage(new ChatComponentTranslation("message.settings.regeneration", ConfigurationHandler.naturalRegeneration ? enabled : disabled));
 		event.player.addChatMessage(new ChatComponentTranslation("message.settings.radius", ConfigurationHandler.wallRadius));
 		event.player.addChatMessage(new ChatComponentTranslation("message.settings.rabbits", ConfigurationHandler.hostileRabbitPercentage));
 	}

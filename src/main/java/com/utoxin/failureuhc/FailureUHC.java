@@ -28,6 +28,7 @@ import com.utoxin.failureuhc.worldgen.WorldGenHandler;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -52,52 +53,56 @@ public class FailureUHC {
 
 	// Global Values
 	public boolean gameStarted = false;
+	public Side side;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		ConfigurationHandler.init(event.getSuggestedConfigurationFile());
-		FMLCommonHandler.instance().bus().register(new ConfigurationHandler());
-		FMLCommonHandler.instance().bus().register(new ChatHandler());
+		side = FMLCommonHandler.instance().getEffectiveSide();
 
-		MinecraftForge.EVENT_BUS.register(new DeathHandler());
-		MinecraftForge.EVENT_BUS.register(new ChatHandler());
-		MinecraftForge.EVENT_BUS.register(new MobSpawnHandler());
-		MinecraftForge.EVENT_BUS.register(new WorldHandler());
+		if (side.isClient()) {
+			LogHelper.info("Client side detected. Disabling server functionality.");
+		} else {
+			ConfigurationHandler.init(event.getSuggestedConfigurationFile());
+			FMLCommonHandler.instance().bus().register(new ConfigurationHandler());
+			FMLCommonHandler.instance().bus().register(new ChatHandler());
 
-		GameRegistry.registerWorldGenerator(new WorldGenHandler(), 0);
+			MinecraftForge.EVENT_BUS.register(new DeathHandler());
+			MinecraftForge.EVENT_BUS.register(new ChatHandler());
+			MinecraftForge.EVENT_BUS.register(new MobSpawnHandler());
+			MinecraftForge.EVENT_BUS.register(new WorldHandler());
 
-		LogHelper.info("Pre Initialization Complete!");
-	}
+			GameRegistry.registerWorldGenerator(new WorldGenHandler(), 0);
 
-	@Mod.EventHandler
-	public void init(FMLInitializationEvent event) {
-		LogHelper.info("Initialization Complete!");
-	}
-
-	@Mod.EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		LogHelper.info("Post Initialization Complete!");
+			LogHelper.info("Pre Initialization Complete!");
+		}
 	}
 
 	@Mod.EventHandler
 	public void serverStarting(FMLServerStartingEvent event) {
-		MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.PEACEFUL);
+		if (side.isServer()) {
+			ServerCommandManager manager = (ServerCommandManager) event.getServer().getCommandManager();
+			manager.registerCommand(new StartCommand());
 
-		//TODO: Figure out per-world storage
-		MinecraftServer.getServer().worldServerForDimension(0).getPerWorldStorage();
+			if (FailureUHC.instance.gameStarted == false) {
+				event.getServer().setDifficultyForAllWorlds(EnumDifficulty.PEACEFUL);
 
-		ServerCommandManager manager = (ServerCommandManager) MinecraftServer.getServer().getCommandManager();
-
-		manager.registerCommand(new StartCommand());
+				for (WorldServer server : MinecraftServer.getServer().worldServers) {
+					server.setAllowedSpawnTypes(false, false);
+					server.getGameRules().setOrCreateGameRule("naturalRegeneration", "true");
+					server.getGameRules().setOrCreateGameRule("doDaylightCycle", "false");
+				}
+			}
+		}
 	}
 
 	@NetworkCheckHandler
-	public boolean networkCheck(Map<String, String> mods, Side side) {
-		if (side.isClient()) {
+	public boolean networkCheck(Map<String, String> mods, Side eventSide) {
+		if (eventSide.isClient() && ConfigurationHandler.doWhitelist) {
 			// Checking the mods in use on the client
 
 			for (String mod : mods.keySet()) {
 				switch (mod) {
+					// Force the Forge mod entries and this mod, to be accepted
 					case "FML":
 					case "Forge":
 					case "mcp":
@@ -106,7 +111,7 @@ public class FailureUHC {
 
 					default:
 						if (ConfigurationHandler.modList.contains(mod.toLowerCase())) {
-							LogHelper.info(String.format("Blocking connection because of non-allowed mod : %s", mod));
+							LogHelper.warn(String.format("Blocking connection because of non-allowed mod : %s", mod));
 							return false;
 						}
 				}

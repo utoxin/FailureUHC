@@ -21,7 +21,9 @@ public class ConfigurationHandler {
 
 	// Game Rule Settings
 	public static boolean naturalRegeneration = false;
+	public static boolean doDaylightCycle = true;
 	public static boolean playerChat = true;
+	public static String difficulty = "normal";
 
 	// Mod Permissions Settings
 	public static boolean doWhitelist = true;
@@ -47,6 +49,8 @@ public class ConfigurationHandler {
 		// Game Rules
 		naturalRegeneration = configuration.getBoolean("naturalRegeneration", "Game Rule Settings", false, "Does health regen naturally?");
 		playerChat = configuration.getBoolean("playerChat", "Game Rule Settings", true, "Can anyone use chat during the game? (To control just spectators, use the spectatorChat setting.)");
+		difficulty = configuration.getString("difficulty", "Game Rule Settings", "normal", "What should the difficulty be? (easy/normal/hard)");
+		doDaylightCycle = configuration.getBoolean("doDaylightCycle", "Game Rule Settings", true, "Should the daylight cycle run during the game?");
 
 		// Mod Permission Settings
 		doWhitelist = configuration.getBoolean("doWhitelist", "Mod Permission Settings", true, "Should we check what mods a client has installed against our whitelist?");
