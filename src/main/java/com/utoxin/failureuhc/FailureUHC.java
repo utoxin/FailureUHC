@@ -33,10 +33,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -65,20 +62,21 @@ public class FailureUHC {
 			ConfigurationHandler.init(event.getSuggestedConfigurationFile());
 			FMLCommonHandler.instance().bus().register(new ConfigurationHandler());
 			FMLCommonHandler.instance().bus().register(new ChatHandler());
+			FMLCommonHandler.instance().bus().register(new TickHandler());
 
 			MinecraftForge.EVENT_BUS.register(new DeathHandler());
 			MinecraftForge.EVENT_BUS.register(new ChatHandler());
 			MinecraftForge.EVENT_BUS.register(new MobSpawnHandler());
 			MinecraftForge.EVENT_BUS.register(new WorldHandler());
 
-			GameRegistry.registerWorldGenerator(new WorldGenHandler(), 0);
+			GameRegistry.registerWorldGenerator(new WorldGenHandler(), 99999);
 
 			LogHelper.info("Pre Initialization Complete!");
 		}
 	}
 
 	@Mod.EventHandler
-	public void serverStarting(FMLServerStartingEvent event) {
+	public void serverStarting(FMLServerAboutToStartEvent event) {
 		if (side.isServer()) {
 			ServerCommandManager manager = (ServerCommandManager) event.getServer().getCommandManager();
 			manager.registerCommand(new StartCommand());
@@ -87,7 +85,6 @@ public class FailureUHC {
 				event.getServer().setDifficultyForAllWorlds(EnumDifficulty.PEACEFUL);
 
 				for (WorldServer server : MinecraftServer.getServer().worldServers) {
-					server.setAllowedSpawnTypes(false, false);
 					server.getGameRules().setOrCreateGameRule("naturalRegeneration", "true");
 					server.getGameRules().setOrCreateGameRule("doDaylightCycle", "false");
 				}
@@ -101,19 +98,13 @@ public class FailureUHC {
 			// Checking the mods in use on the client
 
 			for (String mod : mods.keySet()) {
-				switch (mod) {
-					// Force the Forge mod entries and this mod, to be accepted
-					case "FML":
-					case "Forge":
-					case "mcp":
-					case "FailureUHC":
-						continue;
-
-					default:
-						if (ConfigurationHandler.modList.contains(mod.toLowerCase())) {
-							LogHelper.warn(String.format("Blocking connection because of non-allowed mod : %s", mod));
-							return false;
-						}
+				if (mod.equals("FML") || mod.equals("Forge") || mod.equals("mcp") || mod.equals("FailureUHC")) {
+					continue;
+				} else {
+					if (ConfigurationHandler.modList.contains(mod.toLowerCase())) {
+						LogHelper.warn(String.format("Blocking connection because of non-allowed mod : %s", mod));
+						return false;
+					}
 				}
 			}
 		}

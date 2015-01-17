@@ -11,6 +11,10 @@ import java.util.ArrayList;
 public class ConfigurationHandler {
 	public static Configuration configuration;
 
+	// Timer Settings
+	public static int episodeMinutes = 20;
+	public static int centerEpisode = 6;
+
 	// Spectator Settings
 	public static boolean deadSpectate = false;
 	public static boolean spectatorChat = false;
@@ -38,6 +42,10 @@ public class ConfigurationHandler {
 	}
 
 	private static void loadConfiguration() {
+		// Timer Settings
+		episodeMinutes = configuration.getInt("episodeMinutes", "Timer Settings", 20, 10, 60, "How many minutes between timer messages?");
+		centerEpisode = configuration.getInt("centerEpisode", "Timer Settings", 6, 1, 100, "How many time periods before people should head to center?");
+
 		// Spectator Settings
 		deadSpectate = configuration.getBoolean("deadSpectate", "Spectator Settings", false, "Do dead players get to spectate?");
 		spectatorChat = configuration.getBoolean("spectatorChat", "Spectator Settings", false, "Can spectators use chat?");
@@ -56,7 +64,7 @@ public class ConfigurationHandler {
 		doWhitelist = configuration.getBoolean("doWhitelist", "Mod Permission Settings", true, "Should we check what mods a client has installed against our whitelist?");
 		String[] baseModList = configuration.getStringList("modList", "Mod Permission Settings", new String[]{"FML", "Forge", "mcp", "FailureUHC"}, "What mods should be whitelisted? (Forge / FailureUHC are added automatically, and are here simply as examples.)");
 
-		modList = new ArrayList<>();
+		modList = new ArrayList<String>();
 		for (String mod : baseModList) {
 			modList.add(mod.toLowerCase());
 		}

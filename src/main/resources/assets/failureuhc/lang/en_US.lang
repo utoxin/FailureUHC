@@ -4,7 +4,10 @@ message.components.disabled=DISABLED
 message.components.playeronly=PLAYER ONLY
 
 # Messages
-message.start.test=Testing Start Command
+message.start.timer=Game starting in %d...
+message.start.go=GO! GO! GO!
+message.timer.period=%d minutes done.
+message.timer.center=%d minutes done. You should be heading to the center!
 message.death.spectator=You are now a spectator. Enjoy the rest of the game!
 message.settings.chat=During the game chat is: %s
 message.settings.spectators=Dead spectating is: %s

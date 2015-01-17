@@ -2,20 +2,24 @@ package com.utoxin.failureuhc.commands;
 
 import com.google.common.collect.Lists;
 import com.utoxin.failureuhc.FailureUHC;
+import com.utoxin.failureuhc.events.TickHandler;
 import com.utoxin.failureuhc.utility.ConfigurationHandler;
 import com.utoxin.failureuhc.utility.LogHelper;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
+import net.minecraft.command.CommandSpreadPlayers;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.Achievement;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldServer;
 
 import java.util.Iterator;
+import java.util.TreeMap;
 
 public class StartCommand extends CommandBase {
 	@Override
@@ -30,10 +34,6 @@ public class StartCommand extends CommandBase {
 
 	@Override
 	public void execute(ICommandSender sender, String[] args) throws CommandException {
-		EntityPlayerMP player = getCommandSenderAsPlayer(sender);
-		player.addChatMessage(new ChatComponentTranslation("message.start.test"));
-		FailureUHC.instance.gameStarted = true;
-
 		for (Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
 			EntityPlayerMP playerObject = (EntityPlayerMP) object;
 
@@ -64,26 +64,36 @@ public class StartCommand extends CommandBase {
 			playerObject.clearActivePotions();
 		}
 
-		// TODO: Call or implement our own /spreadplayers command here
+		int minPlayerSpread = (ConfigurationHandler.wallRadius * 2) / Math.max(3, MinecraftServer.getServer().getConfigurationManager().playerEntityList.size() / 4);
 
-		switch (ConfigurationHandler.difficulty) {
-			case "easy":
-				MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.EASY);
-				break;
+		LogHelper.info(String.format("Command: /spreadplayers %s %s %s %s %s %s", "0", "0", String.format("%d", minPlayerSpread), String.format("%d", ConfigurationHandler.wallRadius), "false", "@a"));
 
-			case "hard":
-				MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.HARD);
-				break;
+		CommandSpreadPlayers spreadPlayers = new CommandSpreadPlayers();
+		spreadPlayers.execute(sender, new String[]{"0", "0", String.format("%d", minPlayerSpread), String.format("%d", ConfigurationHandler.wallRadius), "false", "@a"});
 
-			default:
-				MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.NORMAL);
+		if (ConfigurationHandler.difficulty.equals("easy")) {
+			MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.EASY);
+		} else if (ConfigurationHandler.difficulty.equals("hard")) {
+			MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.HARD);
+		} else {
+			MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.NORMAL);
 		}
 
 		for (WorldServer server : MinecraftServer.getServer().worldServers) {
-			server.setAllowedSpawnTypes(true, true);
 			server.getGameRules().setOrCreateGameRule("naturalRegeneration", ConfigurationHandler.naturalRegeneration ? "true" : "false");
 			server.getGameRules().setOrCreateGameRule("doDaylightCycle", ConfigurationHandler.doDaylightCycle ? "true" : "false");
 		}
+
+		FailureUHC.instance.gameStarted = true;
+
+		TickHandler.scheduledMessages = new TreeMap<Long, IChatComponent>();
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 11000, new ChatComponentTranslation("message.start.timer", 5));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 12000, new ChatComponentTranslation("message.start.timer", 4));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 13000, new ChatComponentTranslation("message.start.timer", 3));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 14000, new ChatComponentTranslation("message.start.timer", 2));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 15000, new ChatComponentTranslation("message.start.timer", 1));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 16000, new ChatComponentTranslation("message.start.go"));
+		TickHandler.nextTimerMessageTime = MinecraftServer.getServer().getCurrentTime() + 16000 + ConfigurationHandler.episodeMinutes * 60 * 1000;
 	}
 
 	public int getRequiredPermissionLevel() {
