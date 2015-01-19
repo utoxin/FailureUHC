@@ -27,6 +27,7 @@ import com.utoxin.failureuhc.utility.LogHelper;
 import com.utoxin.failureuhc.worldgen.WorldGenHandler;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -67,7 +68,6 @@ public class FailureUHC {
 			MinecraftForge.EVENT_BUS.register(new DeathHandler());
 			MinecraftForge.EVENT_BUS.register(new ChatHandler());
 			MinecraftForge.EVENT_BUS.register(new MobSpawnHandler());
-			MinecraftForge.EVENT_BUS.register(new WorldHandler());
 
 			GameRegistry.registerWorldGenerator(new WorldGenHandler(), 99999);
 
@@ -76,7 +76,7 @@ public class FailureUHC {
 	}
 
 	@Mod.EventHandler
-	public void serverStarting(FMLServerAboutToStartEvent event) {
+	public void serverAboutToStart(FMLServerAboutToStartEvent event) {
 		if (side.isServer()) {
 			ServerCommandManager manager = (ServerCommandManager) event.getServer().getCommandManager();
 			manager.registerCommand(new StartCommand());
@@ -89,6 +89,14 @@ public class FailureUHC {
 					server.getGameRules().setOrCreateGameRule("doDaylightCycle", "false");
 				}
 			}
+		}
+	}
+
+	@Mod.EventHandler
+	public void serverStarting(FMLServerStartingEvent event) {
+		if (side.isServer()) {
+			BlockPos spawnPoint = new BlockPos(ConfigurationHandler.wallRadius + 256, 128, 0);
+			MinecraftServer.getServer().worldServers[0].setSpawnPoint(spawnPoint);
 		}
 	}
 

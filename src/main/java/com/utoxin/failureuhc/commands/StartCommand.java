@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.utoxin.failureuhc.FailureUHC;
 import com.utoxin.failureuhc.events.TickHandler;
 import com.utoxin.failureuhc.utility.ConfigurationHandler;
-import com.utoxin.failureuhc.utility.LogHelper;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSpreadPlayers;
@@ -54,7 +53,7 @@ public class StartCommand extends CommandBase {
 				playerObject.func_175145_a(achievement);
 			}
 
-			// Reset health and hunger to defaults
+			// Reset health
 			playerObject.setHealth(20);
 
 			// Funky math to reset hunger to defaults
@@ -65,8 +64,6 @@ public class StartCommand extends CommandBase {
 		}
 
 		int minPlayerSpread = (ConfigurationHandler.wallRadius * 2) / Math.max(3, MinecraftServer.getServer().getConfigurationManager().playerEntityList.size() / 4);
-
-		LogHelper.info(String.format("Command: /spreadplayers %s %s %s %s %s %s", "0", "0", String.format("%d", minPlayerSpread), String.format("%d", ConfigurationHandler.wallRadius), "false", "@a"));
 
 		CommandSpreadPlayers spreadPlayers = new CommandSpreadPlayers();
 		spreadPlayers.execute(sender, new String[]{"0", "0", String.format("%d", minPlayerSpread), String.format("%d", ConfigurationHandler.wallRadius), "false", "@a"});
@@ -87,13 +84,13 @@ public class StartCommand extends CommandBase {
 		FailureUHC.instance.gameStarted = true;
 
 		TickHandler.scheduledMessages = new TreeMap<Long, IChatComponent>();
-		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 11000, new ChatComponentTranslation("message.start.timer", 5));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 10000, new ChatComponentTranslation("message.start.timer", 5));
 		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 12000, new ChatComponentTranslation("message.start.timer", 4));
-		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 13000, new ChatComponentTranslation("message.start.timer", 3));
-		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 14000, new ChatComponentTranslation("message.start.timer", 2));
-		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 15000, new ChatComponentTranslation("message.start.timer", 1));
-		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 16000, new ChatComponentTranslation("message.start.go"));
-		TickHandler.nextTimerMessageTime = MinecraftServer.getServer().getCurrentTime() + 16000 + ConfigurationHandler.episodeMinutes * 60 * 1000;
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 14000, new ChatComponentTranslation("message.start.timer", 3));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 16000, new ChatComponentTranslation("message.start.timer", 2));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 18000, new ChatComponentTranslation("message.start.timer", 1));
+		TickHandler.scheduledMessages.put(MinecraftServer.getServer().getCurrentTime() + 20000, new ChatComponentTranslation("message.start.go"));
+		TickHandler.nextTimerMessageTime = MinecraftServer.getServer().getCurrentTime() + 20000 + ConfigurationHandler.episodeMinutes * 60 * 1000;
 	}
 
 	public int getRequiredPermissionLevel() {

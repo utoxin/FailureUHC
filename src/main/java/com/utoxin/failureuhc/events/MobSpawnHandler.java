@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -20,6 +21,13 @@ public class MobSpawnHandler {
 		// Prevent all mob spawns (other than villagers) before game start
 		if (FailureUHC.instance.gameStarted == false && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityPlayerMP) && !(event.entity instanceof EntityVillager)) {
 			event.setCanceled(true);
+		} else {
+			if (event.entity instanceof EntityPlayerMP && event.entity.dimension == 0) {
+				event.entity.setPosition(ConfigurationHandler.wallRadius + 257, 131, 1);
+
+				BlockPos spawnPoint = new BlockPos(ConfigurationHandler.wallRadius + 257, 131, 1);
+				((EntityPlayerMP) event.entity).setSpawnPoint(spawnPoint, true);
+			}
 		}
 
 		// Set some rabbits to be killer bunnies
