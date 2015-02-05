@@ -66,12 +66,15 @@ public class WorldGenHandler implements IWorldGenerator {
 			int spawnChunkX = (ConfigurationHandler.wallRadius + 256) / 16;
 
 			if (Math.abs(spawnChunkX - chunkX) <= 2 && Math.abs(chunkZ) <= 2) {
+				IBlockState glass = Blocks.stained_glass.getStateFromMeta(15);
 				IBlockState barrier = Blocks.barrier.getDefaultState();
 
 				for (int x = 0; x < 16; x++) {
 					for (int z = 0; z < 16; z++) {
 						blockPos = new BlockPos(chunkX * 16 + x, 129, chunkZ * 16 + z);
 						world.setBlockState(blockPos, barrier);
+						blockPos = new BlockPos(chunkX * 16 + x, 128, chunkZ * 16 + z);
+						world.setBlockState(blockPos, glass);
 					}
 				}
 
