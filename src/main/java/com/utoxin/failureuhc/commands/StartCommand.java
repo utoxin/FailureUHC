@@ -66,7 +66,7 @@ public class StartCommand extends CommandBase {
 		int minPlayerSpread = (ConfigurationHandler.wallRadius * 2) / Math.max(3, MinecraftServer.getServer().getConfigurationManager().playerEntityList.size() / 4);
 
 		CommandSpreadPlayers spreadPlayers = new CommandSpreadPlayers();
-		spreadPlayers.execute(sender, new String[]{"0", "0", String.format("%d", minPlayerSpread), String.format("%d", ConfigurationHandler.wallRadius), "false", "@a"});
+		spreadPlayers.execute(sender, new String[]{"0", "0", String.format("%d", minPlayerSpread), String.format("%d", ConfigurationHandler.wallRadius - 2), "false", "@a"});
 
 		if (ConfigurationHandler.difficulty.equals("easy")) {
 			MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.EASY);
