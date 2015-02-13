@@ -23,7 +23,7 @@ public class MobSpawnHandler {
 			event.setCanceled(true);
 		} else {
 			if (FailureUHC.instance.gameStarted == false && event.entity instanceof EntityPlayerMP && event.entity.dimension == 0) {
-				event.entity.setPosition(ConfigurationHandler.wallRadius + 257, 131, 1);
+				((EntityPlayerMP)event.entity).playerNetServerHandler.setPlayerLocation(ConfigurationHandler.wallRadius + 256.5, 130, 0.5, 90, 90);
 
 				BlockPos spawnPoint = new BlockPos(ConfigurationHandler.wallRadius + 257, 131, 1);
 				((EntityPlayerMP) event.entity).setSpawnPoint(spawnPoint, true);

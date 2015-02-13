@@ -16,6 +16,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldSettings;
 
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -36,15 +37,16 @@ public class StartCommand extends CommandBase {
 		for (Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
 			EntityPlayerMP playerObject = (EntityPlayerMP) object;
 
+			// Return player to survival mode
+			playerObject.setGameType(WorldSettings.GameType.SURVIVAL);
+
 			// Remove experience
 			playerObject.removeExperienceLevel(playerObject.experienceLevel + 1);
 
 			// Clear inventories
 			playerObject.inventory.func_174925_a(null, -1, -1, null);
 			playerObject.inventoryContainer.detectAndSendChanges();
-			if (!playerObject.capabilities.isCreativeMode) {
-				playerObject.updateHeldItem();
-			}
+			playerObject.updateHeldItem();
 
 			// Reset all achievements
 			Iterator iterator = Lists.reverse(AchievementList.achievementList).iterator();
@@ -52,15 +54,6 @@ public class StartCommand extends CommandBase {
 				Achievement achievement = (Achievement)iterator.next();
 				playerObject.func_175145_a(achievement);
 			}
-
-			// Reset health
-			playerObject.setHealth(20);
-
-			// Funky math to reset hunger to defaults
-			playerObject.getFoodStats().addStats(20, (5.0f - playerObject.getFoodStats().getSaturationLevel()) / 40.0f);
-
-			// Remove any potion effects
-			playerObject.clearActivePotions();
 		}
 
 		int minPlayerSpread = (ConfigurationHandler.wallRadius * 2) / Math.max(3, MinecraftServer.getServer().getConfigurationManager().playerEntityList.size() / 4);
@@ -79,6 +72,19 @@ public class StartCommand extends CommandBase {
 		for (WorldServer server : MinecraftServer.getServer().worldServers) {
 			server.getGameRules().setOrCreateGameRule("naturalRegeneration", ConfigurationHandler.naturalRegeneration ? "true" : "false");
 			server.getGameRules().setOrCreateGameRule("doDaylightCycle", ConfigurationHandler.doDaylightCycle ? "true" : "false");
+		}
+
+		for (Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+			EntityPlayerMP playerObject = (EntityPlayerMP) object;
+
+			// Reset health
+			playerObject.setHealth(20);
+
+			// Funky math to reset hunger to defaults
+			playerObject.getFoodStats().addStats(20, (5.0f - playerObject.getFoodStats().getSaturationLevel()) / 40.0f);
+
+			// Remove any potion effects
+			playerObject.clearActivePotions();
 		}
 
 		FailureUHC.instance.gameStarted = true;

@@ -26,10 +26,12 @@ import com.utoxin.failureuhc.utility.ConfigurationHandler;
 import com.utoxin.failureuhc.utility.LogHelper;
 import com.utoxin.failureuhc.worldgen.WorldGenHandler;
 import net.minecraft.command.ServerCommandManager;
+import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldSettings;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -95,6 +97,7 @@ public class FailureUHC {
 	public void serverStarted(FMLServerStartedEvent event) {
 		if (side.isServer()) {
 			MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.PEACEFUL);
+			MinecraftServer.getServer().setGameType(WorldSettings.GameType.ADVENTURE);
 
 			for (WorldServer server : MinecraftServer.getServer().worldServers) {
 				server.getGameRules().setOrCreateGameRule("naturalRegeneration", "true");
