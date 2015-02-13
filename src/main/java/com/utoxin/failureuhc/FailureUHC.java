@@ -80,15 +80,6 @@ public class FailureUHC {
 		if (side.isServer()) {
 			ServerCommandManager manager = (ServerCommandManager) event.getServer().getCommandManager();
 			manager.registerCommand(new StartCommand());
-
-			if (FailureUHC.instance.gameStarted == false) {
-				event.getServer().setDifficultyForAllWorlds(EnumDifficulty.PEACEFUL);
-
-				for (WorldServer server : MinecraftServer.getServer().worldServers) {
-					server.getGameRules().setOrCreateGameRule("naturalRegeneration", "true");
-					server.getGameRules().setOrCreateGameRule("doDaylightCycle", "false");
-				}
-			}
 		}
 	}
 
@@ -97,6 +88,18 @@ public class FailureUHC {
 		if (side.isServer()) {
 			BlockPos spawnPoint = new BlockPos(ConfigurationHandler.wallRadius + 256, 128, 0);
 			MinecraftServer.getServer().worldServers[0].setSpawnPoint(spawnPoint);
+		}
+	}
+
+	@Mod.EventHandler
+	public void serverStarted(FMLServerStartedEvent event) {
+		if (side.isServer()) {
+			MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.PEACEFUL);
+
+			for (WorldServer server : MinecraftServer.getServer().worldServers) {
+				server.getGameRules().setOrCreateGameRule("naturalRegeneration", "true");
+				server.getGameRules().setOrCreateGameRule("doDaylightCycle", "false");
+			}
 		}
 	}
 
