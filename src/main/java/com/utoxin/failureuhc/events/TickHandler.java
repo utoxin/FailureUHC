@@ -2,7 +2,11 @@ package com.utoxin.failureuhc.events;
 
 import com.utoxin.failureuhc.FailureUHC;
 import com.utoxin.failureuhc.utility.ConfigurationHandler;
+import net.minecraft.command.CommandException;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentProcessor;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,21 +39,59 @@ public class TickHandler {
 
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
+		String title, subtitle;
 		long currentTime = MinecraftServer.getServer().getCurrentTime();
 
 		if (FailureUHC.instance.gameStarted && scheduledMessages.size() > 0 && scheduledMessages.firstKey() < currentTime) {
 			MinecraftServer.getServer().getConfigurationManager().sendChatMsg(scheduledMessages.get(scheduledMessages.firstKey()));
 			scheduledMessages.remove(scheduledMessages.firstKey());
+
+			if (scheduledMessages.size() == 0 && ConfigurationHandler.showTitleTimers) {
+				title = String.format("{text:\"Start Episode %d\",bold:true}", 1);
+				subtitle = String.format("{text:\"%s players alive...\",color:gray,italic:true}", "???");
+
+				sendTitles(title, subtitle);
+			}
 		}
 
 		if (FailureUHC.instance.gameStarted && nextTimerMessageTime > 0 && nextTimerMessageTime < currentTime) {
 			periodsPassed++;
 			nextTimerMessageTime += ConfigurationHandler.episodeMinutes * 60 * 1000;
 
-			if (periodsPassed < ConfigurationHandler.centerEpisode) {
-				MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentTranslation("message.timer.period", periodsPassed * ConfigurationHandler.episodeMinutes));
-			} else {
-				MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentTranslation("message.timer.center", periodsPassed * ConfigurationHandler.episodeMinutes));
+			if (ConfigurationHandler.showTitleTimers) {
+				title = String.format("{text:\"Start Episode %d\",bold:true}", periodsPassed + 1);
+				subtitle = String.format("{text:\"%s players alive...\",color:gray,italic:true}", "???");
+
+				sendTitles(title, subtitle);
+			}
+
+			if (ConfigurationHandler.showChatTimers) {
+				if (periodsPassed < ConfigurationHandler.centerEpisode) {
+					MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentTranslation("message.timer.period", periodsPassed * ConfigurationHandler.episodeMinutes));
+				} else {
+					MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentTranslation("message.timer.center", periodsPassed * ConfigurationHandler.episodeMinutes));
+				}
+			}
+		}
+	}
+
+	public void sendTitles(String title, String subtitle) {
+		for (Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+			EntityPlayerMP playerObject = (EntityPlayerMP) object;
+
+			IChatComponent subtitleComponent = IChatComponent.Serializer.jsonToComponent(subtitle);
+			IChatComponent titleComponent = IChatComponent.Serializer.jsonToComponent(title);
+
+			S45PacketTitle s45packettitle;
+
+			try {
+				s45packettitle = new S45PacketTitle(S45PacketTitle.Type.SUBTITLE, ChatComponentProcessor.func_179985_a(playerObject, subtitleComponent, playerObject));
+				playerObject.playerNetServerHandler.sendPacket(s45packettitle);
+
+				s45packettitle = new S45PacketTitle(S45PacketTitle.Type.TITLE, ChatComponentProcessor.func_179985_a(playerObject, titleComponent, playerObject));
+				playerObject.playerNetServerHandler.sendPacket(s45packettitle);
+			} catch (CommandException e) {
+				e.printStackTrace();
 			}
 		}
 	}

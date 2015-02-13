@@ -14,6 +14,8 @@ public class ConfigurationHandler {
 	// Timer Settings
 	public static int episodeMinutes = 20;
 	public static int centerEpisode = 6;
+	public static boolean showChatTimers = true;
+	public static boolean showTitleTimers = true;
 
 	// Spectator Settings
 	public static boolean deadSpectate = false;
@@ -43,8 +45,11 @@ public class ConfigurationHandler {
 
 	private static void loadConfiguration() {
 		// Timer Settings
-		episodeMinutes = configuration.getInt("episodeMinutes", "Timer Settings", 20, 10, 60, "How many minutes between timer messages?");
+		episodeMinutes = configuration.getInt("episodeMinutes", "Timer Settings", 20, 1, 60, "How many minutes between timer messages?");
 		centerEpisode = configuration.getInt("centerEpisode", "Timer Settings", 6, 1, 100, "How many time periods before people should head to center?");
+
+		showChatTimers = configuration.getBoolean("chatTimers", "Timer Settings", true, "Show timer messages in chat?");
+		showTitleTimers = configuration.getBoolean("titleTimers", "Timer Settings", true, "Show timer messages as titles?");
 
 		// Spectator Settings
 		deadSpectate = configuration.getBoolean("deadSpectate", "Spectator Settings", false, "Do dead players get to spectate?");

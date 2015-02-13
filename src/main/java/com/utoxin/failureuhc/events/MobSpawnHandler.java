@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -35,6 +36,12 @@ public class MobSpawnHandler {
 			if (randomizer.nextInt(100) < ConfigurationHandler.hostileRabbitPercentage && ((EntityRabbit) event.entity).getRabbitType() != 99) {
 				((EntityRabbit) event.entity).setRabbitType(99);
 			}
+		}
+
+		// Set up Title delays
+		if (ConfigurationHandler.showTitleTimers && event.entity instanceof EntityPlayerMP) {
+			S45PacketTitle s45packet = new S45PacketTitle(20, 160, 20);
+			((EntityPlayerMP)event.entity).playerNetServerHandler.sendPacket(s45packet);
 		}
 	}
 }
