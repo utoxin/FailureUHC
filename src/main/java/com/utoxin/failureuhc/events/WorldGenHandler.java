@@ -1,4 +1,4 @@
-package com.utoxin.failureuhc.worldgen;
+package com.utoxin.failureuhc.events;
 
 import com.utoxin.failureuhc.utility.ConfigurationHandler;
 import com.utoxin.failureuhc.utility.LogHelper;
@@ -6,14 +6,22 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderGenerate;
+import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Random;
 
-public class WorldGenHandler implements IWorldGenerator {
-	@Override
-	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+public class WorldGenHandler {
+	@SubscribeEvent
+	public void populateChunkEvent(PopulateChunkEvent.Post event) {
+		generate(event.chunkX, event.chunkZ, event.world);
+	}
+
+	public void generate(int chunkX, int chunkZ, World world) {
 		int wallRadius;
 		boolean generateSpawnpoint = false;
 
@@ -30,13 +38,13 @@ public class WorldGenHandler implements IWorldGenerator {
 		}
 
 		int wallChunk = wallRadius / 16;
-		int wallChunkSubX = (wallRadius % 16) * (chunkX < 0 ? -1 : 1);
-		int wallChunkSubZ = (wallRadius % 16) * (chunkZ < 0 ? -1 : 1);
+		int wallChunkSubX = chunkX >= 0 ? (wallRadius % 16) : (16 - (wallRadius % 16));
+		int wallChunkSubZ = chunkZ >= 0 ? (wallRadius % 16) : (16 - (wallRadius % 16));
 
 		BlockPos blockPos;
 		IBlockState bedrock = Blocks.bedrock.getDefaultState();
 
-		if (Math.abs(chunkX) == wallChunk) {
+		if (chunkX == wallChunk || chunkX == ((wallChunk * -1) - 1)) {
 			for (int z = 0; z < 16; z++) {
 				if (Math.abs(chunkZ * 16 + z) > wallRadius) {
 					continue;
@@ -49,7 +57,7 @@ public class WorldGenHandler implements IWorldGenerator {
 			}
 		}
 
-		if (Math.abs(chunkZ) == wallChunk) {
+		if (chunkZ == wallChunk || chunkZ == ((wallChunk * -1) - 1)) {
 			for (int x = 0; x < 16; x++) {
 				if (Math.abs(chunkX * 16 + x) > wallRadius) {
 					continue;

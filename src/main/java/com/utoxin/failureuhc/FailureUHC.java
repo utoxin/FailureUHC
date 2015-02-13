@@ -24,10 +24,7 @@ import com.utoxin.failureuhc.proxy.IProxy;
 import com.utoxin.failureuhc.reference.Reference;
 import com.utoxin.failureuhc.utility.ConfigurationHandler;
 import com.utoxin.failureuhc.utility.LogHelper;
-import com.utoxin.failureuhc.worldgen.WorldGenHandler;
 import net.minecraft.command.ServerCommandManager;
-import net.minecraft.command.server.CommandTeleport;
-import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.EnumDifficulty;
@@ -39,7 +36,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Map;
@@ -71,8 +67,7 @@ public class FailureUHC {
 			MinecraftForge.EVENT_BUS.register(new DeathHandler());
 			MinecraftForge.EVENT_BUS.register(new ChatHandler());
 			MinecraftForge.EVENT_BUS.register(new MobSpawnHandler());
-
-			GameRegistry.registerWorldGenerator(new WorldGenHandler(), 99999);
+			MinecraftForge.EVENT_BUS.register(new WorldGenHandler());
 
 			LogHelper.info("Pre Initialization Complete!");
 		}
