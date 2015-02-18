@@ -34,7 +34,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -67,7 +70,10 @@ public class FailureUHC {
 			MinecraftForge.EVENT_BUS.register(new DeathHandler());
 			MinecraftForge.EVENT_BUS.register(new ChatHandler());
 			MinecraftForge.EVENT_BUS.register(new MobSpawnHandler());
-			MinecraftForge.EVENT_BUS.register(new WorldGenHandler());
+
+			WorldGenHandler worldGen = new WorldGenHandler();
+			MinecraftForge.EVENT_BUS.register(worldGen);
+			MinecraftForge.TERRAIN_GEN_BUS.register(worldGen);
 
 			LogHelper.info("Pre Initialization Complete!");
 		}
