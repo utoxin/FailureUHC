@@ -111,9 +111,7 @@ public class FailureUHC {
 			// Checking the mods in use on the client
 
 			for (String mod : mods.keySet()) {
-				if (mod.equals("FML") || mod.equals("Forge") || mod.equals("mcp") || mod.equals("FailureUHC")) {
-					continue;
-				} else {
+				if (!mod.equals("FML") && !mod.equals("Forge") && !mod.equals("mcp") && !mod.equals("FailureUHC")) {
 					if (ConfigurationHandler.modList.contains(mod.toLowerCase())) {
 						LogHelper.warn(String.format("Blocking connection because of non-allowed mod : %s", mod));
 						return false;

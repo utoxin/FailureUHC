@@ -17,9 +17,9 @@ public class ChatHandler {
 			return;
 		}
 
-		if (ConfigurationHandler.playerChat == false) {
+		if (!ConfigurationHandler.playerChat) {
 			event.setCanceled(true);
-		} else if (ConfigurationHandler.spectatorChat == false && event.player.theItemInWorldManager.getGameType() == WorldSettings.GameType.SPECTATOR) {
+		} else if (!ConfigurationHandler.spectatorChat && event.player.theItemInWorldManager.getGameType() == WorldSettings.GameType.SPECTATOR) {
 			event.setCanceled(true);
 		}
 	}
@@ -30,9 +30,9 @@ public class ChatHandler {
 		ChatComponentTranslation disabled = (ChatComponentTranslation) new ChatComponentTranslation("message.components.disabled").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED));
 		ChatComponentTranslation playeronly = (ChatComponentTranslation) new ChatComponentTranslation("message.components.playeronly").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.YELLOW));
 
-		if (ConfigurationHandler.playerChat == false) {
+		if (!ConfigurationHandler.playerChat) {
 			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", disabled));
-		} else if (ConfigurationHandler.spectatorChat == false) {
+		} else if (!ConfigurationHandler.spectatorChat) {
 			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", playeronly));
 		} else {
 			event.player.addChatMessage(new ChatComponentTranslation("message.settings.chat", enabled));

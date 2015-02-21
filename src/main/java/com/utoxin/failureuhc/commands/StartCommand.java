@@ -18,12 +18,11 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
 
-import java.util.Iterator;
 import java.util.TreeMap;
 
 public class StartCommand extends CommandBase {
 	@Override
-	public String getName() {
+	public String getCommandName() {
 		return "startmatch";
 	}
 
@@ -33,7 +32,7 @@ public class StartCommand extends CommandBase {
 	}
 
 	@Override
-	public void execute(ICommandSender sender, String[] args) throws CommandException {
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		for (Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
 			EntityPlayerMP playerObject = (EntityPlayerMP) object;
 
@@ -49,17 +48,15 @@ public class StartCommand extends CommandBase {
 			playerObject.updateHeldItem();
 
 			// Reset all achievements
-			Iterator iterator = Lists.reverse(AchievementList.achievementList).iterator();
-			while (iterator.hasNext()) {
-				Achievement achievement = (Achievement)iterator.next();
-				playerObject.func_175145_a(achievement);
+			for (Object achievement : Lists.reverse(AchievementList.achievementList)) {
+				playerObject.func_175145_a((Achievement) achievement);
 			}
 		}
 
 		int minPlayerSpread = (ConfigurationHandler.wallRadius * 2) / Math.max(3, MinecraftServer.getServer().getConfigurationManager().playerEntityList.size() / 4);
 
 		CommandSpreadPlayers spreadPlayers = new CommandSpreadPlayers();
-		spreadPlayers.execute(sender, new String[]{"0", "0", String.format("%d", minPlayerSpread), String.format("%d", ConfigurationHandler.wallRadius - 2), "false", "@a"});
+		spreadPlayers.processCommand(sender, new String[]{"0", "0", String.format("%d", minPlayerSpread), String.format("%d", ConfigurationHandler.wallRadius - 2), "false", "@a"});
 
 		if (ConfigurationHandler.difficulty.equals("easy")) {
 			MinecraftServer.getServer().setDifficultyForAllWorlds(EnumDifficulty.EASY);

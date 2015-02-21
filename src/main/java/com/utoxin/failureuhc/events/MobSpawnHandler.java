@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Random;
@@ -20,10 +19,10 @@ public class MobSpawnHandler {
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
 		// Prevent all mob spawns (other than villagers) before game start
-		if (FailureUHC.instance.gameStarted == false && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityPlayerMP) && !(event.entity instanceof EntityVillager)) {
+		if (!FailureUHC.instance.gameStarted && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityPlayerMP) && !(event.entity instanceof EntityVillager)) {
 			event.setCanceled(true);
 		} else {
-			if (FailureUHC.instance.gameStarted == false && event.entity instanceof EntityPlayerMP && event.entity.dimension == 0) {
+			if (!FailureUHC.instance.gameStarted && event.entity instanceof EntityPlayerMP && event.entity.dimension == 0) {
 				((EntityPlayerMP)event.entity).playerNetServerHandler.setPlayerLocation(ConfigurationHandler.wallRadius + 256.5, 130, 0.5, 90, 90);
 
 				BlockPos spawnPoint = new BlockPos(ConfigurationHandler.wallRadius + 257, 131, 1);
@@ -32,7 +31,7 @@ public class MobSpawnHandler {
 		}
 
 		// Set some rabbits to be killer bunnies
-		if (FailureUHC.instance.gameStarted == true && event.entity instanceof EntityRabbit) {
+		if (FailureUHC.instance.gameStarted && event.entity instanceof EntityRabbit) {
 			if (randomizer.nextInt(100) < ConfigurationHandler.hostileRabbitPercentage && ((EntityRabbit) event.entity).getRabbitType() != 99) {
 				((EntityRabbit) event.entity).setRabbitType(99);
 			}
