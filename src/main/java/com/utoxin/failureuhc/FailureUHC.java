@@ -70,10 +70,7 @@ public class FailureUHC {
 			MinecraftForge.EVENT_BUS.register(new DeathHandler());
 			MinecraftForge.EVENT_BUS.register(new ChatHandler());
 			MinecraftForge.EVENT_BUS.register(new MobSpawnHandler());
-
-			WorldGenHandler worldGen = new WorldGenHandler();
-			MinecraftForge.EVENT_BUS.register(worldGen);
-			MinecraftForge.TERRAIN_GEN_BUS.register(worldGen);
+			MinecraftForge.EVENT_BUS.register(new WorldGenHandler());
 
 			LogHelper.info("Pre Initialization Complete!");
 		}

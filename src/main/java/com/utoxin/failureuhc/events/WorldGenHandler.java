@@ -4,9 +4,10 @@ import com.utoxin.failureuhc.utility.ConfigurationHandler;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -15,39 +16,36 @@ public class WorldGenHandler {
 	private int wallChunk;
 	private int wallChunkSubX;
 	private int wallChunkSubZ;
-	private boolean generateSpawnpoint;
+	private boolean generateSpawnPoint;
 	private boolean runGeneration;
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void populateChunkPopulateEvent(PopulateChunkEvent.Populate event) {
-		init(event.chunkX, event.chunkZ, event.world);
+	public void populateChunkPostEvent(PopulateChunkEvent.Post event) {
+		generateSpawnPoint = true;
+		generateWall(event.chunkX, event.chunkZ, event.world);
+		generateWaitingArea(event.chunkX, event.chunkZ, event.world);
+	}
 
-		// Ban terraingen likely to punch holes in the wall in any chunks near the wall
-		if (nearWallChunk(event.chunkX, event.chunkZ)) {
-			if (runGeneration && event.world.provider.getDimensionId() == 0) {
-				if (event.type == PopulateChunkEvent.Populate.EventType.LAKE) {
-					event.setResult(Event.Result.DENY);
-				} else if (event.type == PopulateChunkEvent.Populate.EventType.LAVA) {
-					event.setResult(Event.Result.DENY);
-				} else if (event.type == PopulateChunkEvent.Populate.EventType.DUNGEON) {
-					event.setResult(Event.Result.DENY);
-				}
-			}
+	// Re-generates wall when chunks are saved, in case other generation has broken them
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void checkChunkOnSave(ChunkDataEvent.Save event) {
+		ChunkCoordIntPair coords = event.getChunk().getChunkCoordIntPair();
+		World world = event.getChunk().getWorld();
+		generateSpawnPoint = false;
+
+		if (generateWall(coords.chunkXPos, coords.chunkZPos, world)) {
+			event.getChunk().setChunkModified();
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void populateChunkPostEvent(PopulateChunkEvent.Post event) {
-		generate(event.chunkX, event.chunkZ, event.world);
-	}
-
-	public void generate(int chunkX, int chunkZ, World world) {
+	private boolean generateWall(int chunkX, int chunkZ, World world) {
 		init(chunkX, chunkZ, world);
 
 		if (!runGeneration) {
-			return;
+			return false;
 		}
 
+		boolean changesMade = false;
 		BlockPos blockPos;
 
 		if (isWallChunk(chunkX, chunkZ)) {
@@ -61,7 +59,11 @@ public class WorldGenHandler {
 
 					for (int y = 1; y < 256; y++) {
 						blockPos = new BlockPos(chunkX * 16 + wallChunkSubX, y, chunkZ * 16 + z);
-						world.setBlockState(blockPos, bedrock);
+
+						if (world.getBlockState(blockPos) != bedrock) {
+							changesMade = true;
+							world.setBlockState(blockPos, bedrock);
+						}
 					}
 				}
 			}
@@ -74,13 +76,22 @@ public class WorldGenHandler {
 
 					for (int y = 1; y < 256; y++) {
 						blockPos = new BlockPos(chunkX * 16 + x, y, chunkZ * 16 + wallChunkSubZ);
-						world.setBlockState(blockPos, bedrock);
+
+						if (world.getBlockState(blockPos) != bedrock) {
+							changesMade = true;
+							world.setBlockState(blockPos, bedrock);
+						}
 					}
 				}
 			}
 		}
 
-		if (generateSpawnpoint) {
+		return changesMade;
+	}
+
+	private void generateWaitingArea(int chunkX, int chunkZ, World world) {
+		if (generateSpawnPoint) {
+			BlockPos blockPos;
 			int spawnChunkX = (ConfigurationHandler.wallRadius + 256) / 16;
 
 			if (Math.abs(spawnChunkX - chunkX) <= 2 && Math.abs(chunkZ) <= 2) {
@@ -116,21 +127,21 @@ public class WorldGenHandler {
 				}
 			}
 		}
+
 	}
 
 	private void init(int chunkX, int chunkZ, World world) {
-		generateSpawnpoint = false;
-		runGeneration = false;
 		wallRadius = ConfigurationHandler.wallRadius;
 
 		switch (world.provider.getDimensionId()) {
-			case 0: // Overworld
-				generateSpawnpoint = true;
+			case 0: // Over World
 				break;
 			case -1: // Nether
+				generateSpawnPoint = false;
 				wallRadius = wallRadius / 8;
 				break;
 			default:
+				generateSpawnPoint = false;
 				return;
 		}
 
@@ -144,31 +155,11 @@ public class WorldGenHandler {
 		int negativeWallChunk = wallChunk * -1 - 1;
 
 		if (chunkX == wallChunk || chunkX == negativeWallChunk) {
-			if (chunkZ <= wallChunk && chunkZ >= negativeWallChunk) {
-				return true;
-			} else {
-				return false;
-			}
+			return chunkZ <= wallChunk && chunkZ >= negativeWallChunk;
 		}
 
 		if (chunkZ == wallChunk || chunkZ == negativeWallChunk) {
-			if (chunkX <= wallChunk && chunkX >= negativeWallChunk) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		return false;
-	}
-
-	private boolean nearWallChunk(int chunkX, int chunkZ) {
-		for (int x = -1; x <= 1; x++) {
-			for (int z = -1; z <= 1; z++) {
-				if (isWallChunk(chunkX + x, chunkZ + z)) {
-					return true;
-				}
-			}
+			return chunkX <= wallChunk && chunkX >= negativeWallChunk;
 		}
 
 		return false;
