@@ -56,7 +56,7 @@ public class ConfigurationHandler {
 		spectatorChat = configuration.getBoolean("spectatorChat", "Spectator Settings", false, "Can spectators use chat?");
 
 		// Worldgen
-		wallRadius = configuration.getInt("wallRadius", "Worldgen Settings", 500, 50, 5000, "How far from 0,0 should the wall generateWall?");
+		wallRadius = configuration.getInt("wallRadius", "Worldgen Settings", 500, 50, 5000, "How far from 0,0 should the wall generate?");
 		hostileRabbitPercentage = configuration.getInt("hostileRabbitPercentage", "Worldgen Settings", 15, 0, 100, "What percentage of rabbits should be hostile?");
 
 		// Game Rules
