@@ -33,6 +33,8 @@ public class StartCommand extends CommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		FailureUHC.instance.playersAlive = MinecraftServer.getServer().getConfigurationManager().playerEntityList.size();
+
 		for (Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
 			EntityPlayerMP playerObject = (EntityPlayerMP) object;
 

@@ -14,3 +14,7 @@ message.settings.spectators=Dead spectating is: %s
 message.settings.regeneration=Natural regeneration is: %s
 message.settings.radius=Arena Wall radius is: %d
 message.settings.rabbits=Deadly rabbit percentage is: %d%%
+
+# Titles
+title.episode=End Episode %d
+title.alive=%d Players Alive

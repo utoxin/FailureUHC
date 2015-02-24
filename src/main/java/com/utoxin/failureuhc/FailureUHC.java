@@ -54,6 +54,7 @@ public class FailureUHC {
 	// Global Values
 	public boolean gameStarted = false;
 	public Side side;
+	public int playersAlive = 0;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
