@@ -88,7 +88,7 @@ public class FailureUHC {
 	@Mod.EventHandler
 	public void serverStarting(FMLServerStartingEvent event) {
 		if (side.isServer()) {
-			BlockPos spawnPoint = new BlockPos(ConfigurationHandler.wallRadius + 256, 128, 0);
+			BlockPos spawnPoint = new BlockPos(ConfigurationHandler.wallRadius + 256, 134, 0);
 			MinecraftServer.getServer().worldServers[0].setSpawnPoint(spawnPoint);
 		}
 	}
