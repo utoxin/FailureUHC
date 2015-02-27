@@ -97,12 +97,10 @@ public class WorldGenHandler {
 			BlockPos blockPos;
 			int spawnChunkX = (ConfigurationHandler.wallRadius + 256) / 16;
 
-			if (Math.abs(spawnChunkX - chunkX) <= 2 && Math.abs(chunkZ) <= 2) {
-				generateFloor(chunkX, chunkZ, world);
-
+			if (Math.abs(spawnChunkX - chunkX) <= 1 && Math.abs(chunkZ) <= 1) {
 				IBlockState barrier = Blocks.barrier.getDefaultState();
 
-				if (chunkZ == -2 || chunkZ == 2) {
+				if (chunkZ == -1 || chunkZ == 1) {
 					for (int x = 0; x < 16; x++) {
 						for (int y = 134; y < 256; y++) {
 							blockPos = new BlockPos(chunkX * 16 + x, y, chunkZ * 16 + (chunkZ > 0 ? 15 : 0));
@@ -112,7 +110,7 @@ public class WorldGenHandler {
 				}
 
 				int chunkXOffset = chunkX - spawnChunkX;
-				if (chunkXOffset == -2 || chunkXOffset == 2) {
+				if (chunkXOffset == -1 || chunkXOffset == 1) {
 					for (int z = 0; z < 16; z++) {
 						for (int y = 134; y < 256; y++) {
 							blockPos = new BlockPos(chunkX * 16 + (chunkXOffset > 0 ? 15 : 0), y, chunkZ * 16 + z);
@@ -120,13 +118,19 @@ public class WorldGenHandler {
 						}
 					}
 				}
+
+				generateFloor(chunkX, chunkZ, world);
+			}
+
+			if (spawnChunkX == chunkX && chunkZ == 0) {
+
 			}
 		}
 	}
 
 	private void generateFloor(int chunkX, int chunkZ, World world) {
 		IBlockState glass = Blocks.stained_glass.getStateFromMeta(random.nextInt(16));
-		IBlockState edge = Blocks.stone.getStateFromMeta((random.nextInt(3)+1) * 2);
+		IBlockState edge = Blocks.hardened_clay.getStateFromMeta(random.nextInt(16));
 		IBlockState barrier = Blocks.barrier.getDefaultState();
 		BlockPos blockPos;
 
