@@ -128,18 +128,22 @@ public class WorldGenHandler {
 
 			if (spawnChunkX == chunkX && chunkZ == 0) {
                 IBlockState stoneBrick = Blocks.stonebrick.getDefaultState();
-                IBlockState sign = Blocks.wall_sign.getDefaultState();
+                IBlockState sign = Blocks.wall_sign.getDefaultState().withProperty(FACING, EnumFacing.WEST);
                 IBlockState button = Blocks.stone_button.getDefaultState();
 
                 for (int z = 2; z < 14; z++) {
                     for (int y = 134; y < 138; y++) {
                         blockPos = new BlockPos(chunkX * 16 + 15, y, chunkZ * 16 + z);
                         world.setBlockState(blockPos, stoneBrick);
+                        if (y >= 135 && y <= 136 && z > 2 && z < 13) {
+                            blockPos = new BlockPos(chunkX * 16 + 14, y, chunkZ * 16 + z);
+                            world.setBlockState(blockPos, sign);
+                        }
 
                         blockPos = new BlockPos(chunkX * 16, y, chunkZ * 16 + z);
 
-                        if (y == 135 && (z > 2 && z < 13)) {
-                            world.setBlockState(blockPos, Blocks.redstone_lamp.getDefaultState());
+                        if (y == 135 && z > 2 && z < 13) {
+                            world.setBlockState(blockPos, Blocks.wool.getStateFromMeta(z));
 
                             blockPos = new BlockPos(chunkX * 16 + 1, y, chunkZ * 16 + z);
                             world.setBlockState(blockPos, button.withProperty(FACING, EnumFacing.EAST));
