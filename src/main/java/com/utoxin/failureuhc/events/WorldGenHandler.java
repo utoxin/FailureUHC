@@ -1,9 +1,12 @@
 package com.utoxin.failureuhc.events;
 
 import com.utoxin.failureuhc.utility.ConfigurationHandler;
+import net.minecraft.block.BlockButton;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
@@ -21,6 +24,7 @@ public class WorldGenHandler {
 	private boolean generateSpawnPoint;
 	private boolean runGeneration;
 	private Random random = new Random();
+    public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void populateChunkPostEvent(PopulateChunkEvent.Post event) {
@@ -123,6 +127,28 @@ public class WorldGenHandler {
 			}
 
 			if (spawnChunkX == chunkX && chunkZ == 0) {
+                IBlockState stoneBrick = Blocks.stonebrick.getDefaultState();
+                IBlockState sign = Blocks.wall_sign.getDefaultState();
+                IBlockState button = Blocks.stone_button.getDefaultState();
+
+                for (int z = 2; z < 14; z++) {
+                    for (int y = 134; y < 138; y++) {
+                        blockPos = new BlockPos(chunkX * 16 + 15, y, chunkZ * 16 + z);
+                        world.setBlockState(blockPos, stoneBrick);
+
+                        blockPos = new BlockPos(chunkX * 16, y, chunkZ * 16 + z);
+
+                        if (y == 135 && (z > 2 && z < 13)) {
+                            world.setBlockState(blockPos, Blocks.redstone_lamp.getDefaultState());
+
+                            blockPos = new BlockPos(chunkX * 16 + 1, y, chunkZ * 16 + z);
+                            world.setBlockState(blockPos, button.withProperty(FACING, EnumFacing.EAST));
+                        } else {
+                            world.setBlockState(blockPos, stoneBrick);
+                        }
+                    }
+                }
+
 
 			}
 		}
@@ -130,7 +156,7 @@ public class WorldGenHandler {
 
 	private void generateFloor(int chunkX, int chunkZ, World world) {
 		IBlockState glass = Blocks.stained_glass.getStateFromMeta(random.nextInt(16));
-		IBlockState edge = Blocks.hardened_clay.getStateFromMeta(random.nextInt(16));
+		IBlockState edge = Blocks.stained_hardened_clay.getStateFromMeta(random.nextInt(16));
 		IBlockState barrier = Blocks.barrier.getDefaultState();
 		BlockPos blockPos;
 

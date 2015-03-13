@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 public class MobSpawnHandler {
-	Random randomizer = new Random();
+	Random random = new Random();
 
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
@@ -32,7 +32,7 @@ public class MobSpawnHandler {
 
 		// Set some rabbits to be killer bunnies
 		if (FailureUHC.instance.gameStarted && event.entity instanceof EntityRabbit) {
-			if (randomizer.nextInt(100) < ConfigurationHandler.hostileRabbitPercentage && ((EntityRabbit) event.entity).getRabbitType() != 99) {
+			if (random.nextInt(100) < ConfigurationHandler.hostileRabbitPercentage && ((EntityRabbit) event.entity).getRabbitType() != 99) {
 				((EntityRabbit) event.entity).setRabbitType(99);
 			}
 		}
